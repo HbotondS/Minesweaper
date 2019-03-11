@@ -116,7 +116,10 @@ void MainWindow::clearField(int x, int y)
     else
     {
         if (mines[x][y] != 0)
+        {
+            btns[x][y]->setDisabled(true);
             btns[x][y]->setText(QString::number(mines[x][y]));
+        }
     }
 }
 
