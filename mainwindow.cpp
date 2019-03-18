@@ -103,6 +103,7 @@ void MainWindow::clearField(int x, int y)
 {
     if (mines[x][y] == 0 && btns[x][y]->isEnabled())
     {
+        btns[x][y]->setStyleSheet("border: none;");
         btns[x][y]->setDisabled(true);
         if ((x-1) > -1)
             clearField(x-1, y);
@@ -117,6 +118,7 @@ void MainWindow::clearField(int x, int y)
     {
         if (mines[x][y] != 0)
         {
+            btns[x][y]->setStyleSheet("border: none;");
             btns[x][y]->setDisabled(true);
             btns[x][y]->setText(QString::number(mines[x][y]));
         }
@@ -131,6 +133,17 @@ void MainWindow::btn_action(int x, int y)
         case -1:
         {
             showMines();
+            QMessageBox messageBox;
+            QMessageBox::StandardButton reply;
+            reply = messageBox.critical(this, "Game over", "You lost!", QMessageBox::Retry | QMessageBox::Close);
+            messageBox.setFixedSize(500,200);
+
+            if (reply == QMessageBox::Retry) {
+                // todo: retry
+                qDebug() << "Retry";
+            } else {
+                QApplication::quit();
+            }
             break;
         }
         case 0:
@@ -140,6 +153,7 @@ void MainWindow::btn_action(int x, int y)
         }
         default:
         {
+            btns[x][y]->setStyleSheet("border: none;");
             btns[x][y]->setText(QString::number(isMine));
             btns[x][y]->setDisabled(true);
         }

@@ -13,6 +13,25 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">MainWindow {
+    background: lightgray;
+}
+
+QPushButton {
+	background-color: #BFBFBF;
+	color: black;
+    border-bottom: 2px solid #7B7B7B;
+    border-left: 2px solid #ffffff;
+    border-top: 2px solid #ffffff;
+	border-right: 2px solid #7B7B7B;
+}
+
+QPushButton:hover {
+    background-color: lightgray;
+    color: slategray;
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

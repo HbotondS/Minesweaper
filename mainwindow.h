@@ -6,7 +6,7 @@
 #include "QPushButton"
 #include "QDebug"
 #include "QGridLayout"
-#include "QSignalMapper"
+#include "QMessageBox"
 
 namespace Ui {
 class MainWindow;
