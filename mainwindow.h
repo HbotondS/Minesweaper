@@ -7,6 +7,7 @@
 #include "QDebug"
 #include "QGridLayout"
 #include "QMessageBox"
+#include "QLabel"
 
 namespace Ui {
 class MainWindow;

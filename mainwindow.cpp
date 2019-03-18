@@ -7,13 +7,23 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     QGridLayout *btnLayout = new QGridLayout(ui->centralWidget);
+    auto temp = new QLabel("bombs");
+    temp->setStyleSheet("padding-bottom: 600px;");
+    btnLayout->addWidget(temp, 0, 0, 0, 4);
+    temp = new QLabel("timer");
+    temp->setStyleSheet("padding-bottom: 600px;");
+    temp->setAlignment(Qt::AlignCenter | Qt::AlignRight);
+    btnLayout->addWidget(temp, 0, 9, 0, -5);
+    // TODO: bombs and timer mechanism and style
+
+
     for (int i = 0; i < 10; ++i)
     {
         for (int j = 0; j < 10; ++j)
         {
             btns[i][j] = new QPushButton();
             btns[i][j]->setMinimumSize(50, 50);
-            btnLayout->addWidget(btns[i][j], i, j);
+            btnLayout->addWidget(btns[i][j], i+1, j);
             connect(btns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
         }
     }
