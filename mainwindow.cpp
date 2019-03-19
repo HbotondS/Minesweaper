@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     init();
+
+    connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
+    connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
 }
 
 MainWindow::~MainWindow()
