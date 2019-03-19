@@ -6,7 +6,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QGridLayout *btnLayout = new QGridLayout(ui->centralWidget);
+    init();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::init() {
+    memset(mines, 0, sizeof(mines));
+
+    btnLayout = new QGridLayout(ui->centralWidget);
     auto temp = new QLabel("bombs");
     temp->setStyleSheet("padding-bottom: 600px;");
     btnLayout->addWidget(temp, 0, 0, 0, 4);
@@ -31,12 +42,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralWidget->setLayout(btnLayout);
 
     generateMines();
-    countMines();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::generateMines()
@@ -46,51 +51,48 @@ void MainWindow::generateMines()
     {
         int j = rand() % 10;
         mines[i][j] = -1;
+        countMines(i, j);
     }
 }
 
-void MainWindow::countMines()
-{
-    for (int i = 0; i < 10; ++i)
+void MainWindow::incNum(int i, int j) {
+    if (mines[i][j] != -1) {
+        ++mines[i][j];
+    }
+}
+
+void MainWindow::countMines(int i, int j) {
+    if (i-1 >= 0 && j-1 >= 0)
     {
-        for (int j = 0; j < 10; ++j)
-        {
-            if (mines[i][j] != -1)
-            {
-                if (mines[i-1][j-1] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i-1][j] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i-1][j+1] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i][j-1] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i][j+1] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i+1][j-1] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i+1][j] == -1)
-                {
-                    ++mines[i][j];
-                }
-                if (mines[i+1][j+1] == -1)
-                {
-                    ++mines[i][j];
-                }
-            }
-        }
+        incNum(i-1, j-1);
+    }
+    if (i-1 >= 0)
+    {
+        incNum(i-1, j);
+    }
+    if (i-1 >= 0 && j+1 <= 9)
+    {
+        incNum(i-1, j+1);
+    }
+    if (j-1 >= 0)
+    {
+        incNum(i, j-1);
+    }
+    if (j+1 <= 9)
+    {
+        incNum(i, j+1);
+    }
+    if (i+1 <= 9 && j-1 >= 0)
+    {
+        incNum(i+1, j-1);
+    }
+    if (i+1 <= 9)
+    {
+        incNum(i+1, j);
+    }
+    if (i+1 <= 9 && j+1 <= 9)
+    {
+        incNum(i+1, j+1);
     }
 }
 
@@ -149,8 +151,7 @@ void MainWindow::btn_action(int x, int y)
             messageBox.setFixedSize(500,200);
 
             if (reply == QMessageBox::Retry) {
-                // todo: retry
-                qDebug() << "Retry";
+                newGame();
             } else {
                 QApplication::quit();
             }
@@ -168,4 +169,19 @@ void MainWindow::btn_action(int x, int y)
             btns[x][y]->setDisabled(true);
         }
     }
+}
+
+void MainWindow::newGame() {
+    QLayoutItem *item;
+    QWidget * widget;
+    while ((item = btnLayout->takeAt(0))) {
+        if ((widget = item->widget()) != nullptr) {
+            widget->hide(); delete widget;
+        }
+        else {
+            delete item;
+        }
+    }
+    delete btnLayout;
+    init();
 }
