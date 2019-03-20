@@ -25,10 +25,10 @@ void MainWindow::init() {
     memset(mines, 0, sizeof(mines));
 
     btnLayout = new QGridLayout(ui->centralWidget);
-    bombsLabel = new QLabel("bombs");
+    bombsLabel = new QLabel("10");
     bombsLabel->setStyleSheet("padding-bottom: 600px;");
     btnLayout->addWidget(bombsLabel, 0, 0, 0, 4);
-    timeLabel = new QLabel("timer");
+    timeLabel = new QLabel("");
     timeLabel->setStyleSheet("padding-bottom: 600px;");
     timeLabel->setAlignment(Qt::AlignCenter | Qt::AlignRight);
     btnLayout->addWidget(timeLabel, 0, 9, 0, -5);
@@ -154,6 +154,7 @@ void MainWindow::btn_action(int x, int y)
     {
         case -1:
         {
+            btns[x][y]->setStyleSheet("color: red;");
             timer->stop();
             showMines();
             QMessageBox messageBox;

@@ -47,8 +47,6 @@ QPushButton:hover {
      <string>&amp;Options</string>
     </property>
     <addaction name="action_New_game"/>
-    <addaction name="action_Pause"/>
-    <addaction name="actionP_lay"/>
     <addaction name="action_Exit"/>
    </widget>
    <addaction name="menu_Options"/>
