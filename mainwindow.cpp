@@ -16,7 +16,7 @@ MainWindow::MainWindow(int x, int y):
     ui(new Ui::MainWindow),
     xDimension(x),
     yDimension(y)
-{
+{    
     ui->setupUi(this);
     init();
     connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
@@ -35,15 +35,18 @@ void MainWindow::init() {
 
     memset(mines, 0, sizeof(mines));
 
-    btnLayout = new QGridLayout(ui->centralWidget);
+    QVBoxLayout* mainLayout = new QVBoxLayout();
+    btnLayout = new QGridLayout();
+    QHBoxLayout* labelLayout = new QHBoxLayout();
+
     bombsLabel = new QLabel("10");
-    bombsLabel->setStyleSheet("padding-bottom: 600px;");
-    btnLayout->addWidget(bombsLabel, 0, 0, 0, 4);
+    labelLayout->addWidget(bombsLabel);
     timeLabel = new QLabel("");
-    timeLabel->setStyleSheet("padding-bottom: 600px;");
-    timeLabel->setAlignment(Qt::AlignCenter | Qt::AlignRight);
-    btnLayout->addWidget(timeLabel, 0, 9, 0, -5);
-    // TODO: bombs and timer mechanism and style
+    timeLabel->setAlignment(Qt::AlignRight);
+    labelLayout->addWidget(timeLabel);
+
+    mainLayout->addLayout(labelLayout);
+    mainLayout->addLayout(btnLayout);
 
 
     for (int i = 0; i < xDimension; ++i)
@@ -51,13 +54,12 @@ void MainWindow::init() {
         for (int j = 0; j < xDimension; ++j)
         {
             btns[i][j] = new QPushButton();
-            btns[i][j]->setMinimumSize(50, 50);
-            btnLayout->addWidget(btns[i][j], i+1, j);
+            btns[i][j]->setMinimumSize(40, 40);
+            btnLayout->addWidget(btns[i][j], i, j);
             connect(btns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
         }
     }
-    //this->setFixedSize(this->minimumSize());
-    ui->centralWidget->setLayout(btnLayout);
+    ui->centralWidget->setLayout(mainLayout);
 
     generateMines();
 
@@ -196,7 +198,6 @@ void MainWindow::btn_action(int x, int y)
 
 void MainWindow::update_time()
 {
-    //qDebug() << elapsedTime->elapsed()/100;
     timeLabel->setText(QString::number(elapsedTime->elapsed()/100));
 }
 

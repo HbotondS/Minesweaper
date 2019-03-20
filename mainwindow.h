@@ -10,6 +10,8 @@
 #include "QLabel"
 #include "QElapsedTimer"
 #include "QTimer"
+#include "QVBoxLayout"
+#include "QHBoxLayout"
 
 namespace Ui {
 class MainWindow;
@@ -36,7 +38,7 @@ private:
     QTimer* timer;
     QElapsedTimer* elapsedTime;
 
-    QGridLayout *btnLayout;
+    QGridLayout* btnLayout;
     QPushButton* btns[10][10];
 
     /*
