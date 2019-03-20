@@ -8,6 +8,8 @@
 #include "QGridLayout"
 #include "QMessageBox"
 #include "QLabel"
+#include "QElapsedTimer"
+#include "QTimer"
 
 namespace Ui {
 class MainWindow;
@@ -24,8 +26,15 @@ public:
 private:
     Ui::MainWindow *ui;
 
+    QLabel* bombsLabel;
+    QLabel* timeLabel;
+
+    QTimer* timer;
+    QElapsedTimer* elapsedTime;
+
     QGridLayout *btnLayout;
     QPushButton* btns[10][10];
+
     /*
      * -1 <= mines
      *  0 <= no mines in neighbour
@@ -43,6 +52,7 @@ private:
 
 private slots:
     void btn_action(int, int);
+    void update_time();
 };
 
 #endif // MAINWINDOW_H

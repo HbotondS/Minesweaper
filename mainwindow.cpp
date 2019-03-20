@@ -18,16 +18,20 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::init() {
+    timer = new QTimer();
+    elapsedTime = new QElapsedTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
+
     memset(mines, 0, sizeof(mines));
 
     btnLayout = new QGridLayout(ui->centralWidget);
-    auto temp = new QLabel("bombs");
-    temp->setStyleSheet("padding-bottom: 600px;");
-    btnLayout->addWidget(temp, 0, 0, 0, 4);
-    temp = new QLabel("timer");
-    temp->setStyleSheet("padding-bottom: 600px;");
-    temp->setAlignment(Qt::AlignCenter | Qt::AlignRight);
-    btnLayout->addWidget(temp, 0, 9, 0, -5);
+    bombsLabel = new QLabel("bombs");
+    bombsLabel->setStyleSheet("padding-bottom: 600px;");
+    btnLayout->addWidget(bombsLabel, 0, 0, 0, 4);
+    timeLabel = new QLabel("timer");
+    timeLabel->setStyleSheet("padding-bottom: 600px;");
+    timeLabel->setAlignment(Qt::AlignCenter | Qt::AlignRight);
+    btnLayout->addWidget(timeLabel, 0, 9, 0, -5);
     // TODO: bombs and timer mechanism and style
 
 
@@ -45,6 +49,9 @@ void MainWindow::init() {
     ui->centralWidget->setLayout(btnLayout);
 
     generateMines();
+
+    timer->start();
+    elapsedTime->start();
 }
 
 void MainWindow::generateMines()
@@ -147,6 +154,7 @@ void MainWindow::btn_action(int x, int y)
     {
         case -1:
         {
+            timer->stop();
             showMines();
             QMessageBox messageBox;
             QMessageBox::StandardButton reply;
@@ -174,6 +182,12 @@ void MainWindow::btn_action(int x, int y)
     }
 }
 
+void MainWindow::update_time()
+{
+    //qDebug() << elapsedTime->elapsed()/100;
+    timeLabel->setText(QString::number(elapsedTime->elapsed()/100));
+}
+
 void MainWindow::newGame() {
     QLayoutItem *item;
     QWidget * widget;
@@ -186,5 +200,7 @@ void MainWindow::newGame() {
         }
     }
     delete btnLayout;
+    delete timer;
+    delete elapsedTime;
     init();
 }
