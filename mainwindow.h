@@ -21,10 +21,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(int, int);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+
+    int xDimension = 10;
+    int yDimension = 10;
 
     QLabel* bombsLabel;
     QLabel* timeLabel;

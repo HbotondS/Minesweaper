@@ -12,6 +12,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
 }
 
+MainWindow::MainWindow(int x, int y):
+    ui(new Ui::MainWindow),
+    xDimension(x),
+    yDimension(y)
+{
+    ui->setupUi(this);
+    init();
+    connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
+    connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -35,9 +46,9 @@ void MainWindow::init() {
     // TODO: bombs and timer mechanism and style
 
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < xDimension; ++i)
     {
-        for (int j = 0; j < 10; ++j)
+        for (int j = 0; j < xDimension; ++j)
         {
             btns[i][j] = new QPushButton();
             btns[i][j]->setMinimumSize(50, 50);
@@ -45,7 +56,7 @@ void MainWindow::init() {
             connect(btns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
         }
     }
-    this->setFixedSize(this->minimumSize());
+    //this->setFixedSize(this->minimumSize());
     ui->centralWidget->setLayout(btnLayout);
 
     generateMines();
@@ -108,9 +119,9 @@ void MainWindow::countMines(int i, int j) {
 
 void MainWindow::showMines()
 {
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < xDimension; ++i)
     {
-        for (int j = 0; j < 10; ++j)
+        for (int j = 0; j < yDimension; ++j)
         {
             if (mines[i][j] == -1)
             {
