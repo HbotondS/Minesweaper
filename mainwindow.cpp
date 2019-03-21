@@ -39,10 +39,11 @@ void MainWindow::init() {
     {
         for (int j = 0; j < 10; ++j)
         {
-            btns[i][j] = new QPushButton();
+            btns[i][j] = new QRightClickButton(this);
             btns[i][j]->setMinimumSize(50, 50);
             btnLayout->addWidget(btns[i][j], i+1, j);
-            connect(btns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
+            connect(btns[i][j], &QRightClickButton::clicked, [this, i, j]{btn_action(i, j);});
+            connect(btns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
         }
     }
     this->setFixedSize(this->minimumSize());
@@ -185,8 +186,12 @@ void MainWindow::btn_action(int x, int y)
 
 void MainWindow::update_time()
 {
-    //qDebug() << elapsedTime->elapsed()/100;
     timeLabel->setText(QString::number(elapsedTime->elapsed()/100));
+}
+
+void MainWindow::onRightClicked(int x, int y)
+{
+    btns[x][y]->setText("B");
 }
 
 void MainWindow::newGame() {

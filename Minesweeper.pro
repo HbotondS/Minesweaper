@@ -26,10 +26,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    qrightclickbutton.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    qrightclickbutton.h
 
 FORMS += \
         mainwindow.ui

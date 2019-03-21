@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <QMainWindow>
-#include "QPushButton"
+#include "qrightclickbutton.h"
 #include "QDebug"
 #include "QGridLayout"
 #include "QMessageBox"
@@ -33,7 +33,7 @@ private:
     QElapsedTimer* elapsedTime;
 
     QGridLayout *btnLayout;
-    QPushButton* btns[10][10];
+    QRightClickButton* btns[10][10];
 
     /*
      * -1 <= mines
@@ -53,6 +53,8 @@ private:
 private slots:
     void btn_action(int, int);
     void update_time();
+
+    void onRightClicked(int, int);
 };
 
 #endif // MAINWINDOW_H
