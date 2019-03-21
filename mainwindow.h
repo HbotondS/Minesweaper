@@ -49,12 +49,20 @@ private:
     void incNum(int, int);
     void showMines();
     void clearField(int, int);
+    int btnsLeft();
+
+    void printMines();
 
 private slots:
     void btn_action(int, int);
     void update_time();
 
     void onRightClicked(int, int);
+
+    void winmsg();
+
+signals:
+    void win();
 };
 
 #endif // MAINWINDOW_H
