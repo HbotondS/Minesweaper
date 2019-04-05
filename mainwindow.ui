@@ -10,6 +10,18 @@
     <height>300</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>400</width>
+    <height>300</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -47,13 +59,14 @@ QPushButton:hover {
      <string>&amp;Options</string>
     </property>
     <addaction name="action_New_game"/>
+    <addaction name="action_Restart"/>
     <addaction name="action_Exit"/>
    </widget>
    <addaction name="menu_Options"/>
   </widget>
-  <action name="action_New_game">
+  <action name="action_Restart">
    <property name="text">
-    <string>&amp;New game</string>
+    <string>&amp;Restart</string>
    </property>
   </action>
   <action name="action_Pause">
@@ -69,6 +82,11 @@ QPushButton:hover {
   <action name="action_Exit">
    <property name="text">
     <string>&amp;Exit</string>
+   </property>
+  </action>
+  <action name="action_New_game">
+   <property name="text">
+    <string>&amp;New game</string>
    </property>
   </action>
  </widget>

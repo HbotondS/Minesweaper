@@ -39,7 +39,6 @@ private:
     QElapsedTimer* elapsedTime;
 
     QGridLayout* btnLayout;
-    QPushButton* btns[10][10];
     QPushButton*** newBtns;
 
     /*
@@ -57,6 +56,7 @@ private:
     void showMines();
     void clearField(int, int);
     void fillmines();
+    void restart();
 
 private slots:
     void btn_action(int, int);
