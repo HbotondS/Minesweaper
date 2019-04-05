@@ -40,13 +40,14 @@ private:
 
     QGridLayout* btnLayout;
     QPushButton* btns[10][10];
+    QPushButton*** newBtns;
 
     /*
      * -1 <= mines
      *  0 <= no mines in neighbour
      *  1-6 <= no. of mines located in neighbour
      */
-    int mines[10][10];
+    int **mines;
 
     void init();
     void newGame();
@@ -55,6 +56,7 @@ private:
     void incNum(int, int);
     void showMines();
     void clearField(int, int);
+    void fillmines();
 
 private slots:
     void btn_action(int, int);

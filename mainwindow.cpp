@@ -29,11 +29,9 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::init() {
-    timer = new QTimer();
-    elapsedTime = new QElapsedTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
-    memset(mines, 0, sizeof(mines));
+//    elapsedTime = new QElapsedTimer();
+//    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
     QVBoxLayout* mainLayout = new QVBoxLayout();
     btnLayout = new QGridLayout();
@@ -48,31 +46,38 @@ void MainWindow::init() {
     mainLayout->addLayout(labelLayout);
     mainLayout->addLayout(btnLayout);
 
+    newBtns = new QPushButton**[xDimension];
+    mines = new int*[xDimension];
+    for (int i = 0; i < xDimension; ++i) {
+        newBtns[i] = new QPushButton*[yDimension];
+        mines[i] = new int[yDimension];
+    }
+    fillmines();
 
+    generateMines();
     for (int i = 0; i < xDimension; ++i)
     {
-        for (int j = 0; j < xDimension; ++j)
+        for (int j = 0; j < yDimension; ++j)
         {
-            btns[i][j] = new QPushButton();
-            btns[i][j]->setMinimumSize(40, 40);
-            btnLayout->addWidget(btns[i][j], i, j);
-            connect(btns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
+            newBtns[i][j] = new QPushButton();
+            newBtns[i][j]->setMinimumSize(40, 40);
+            //newBtns[i][j]->setText(QString::number(i) + "." + QString::number(j));
+            newBtns[i][j]->setText(QString::number(mines[i][j]));
+            btnLayout->addWidget(newBtns[i][j], i, j);
         }
     }
     ui->centralWidget->setLayout(mainLayout);
 
-    generateMines();
-
-    timer->start();
-    elapsedTime->start();
+//    timer->start();
+//    elapsedTime->start();
 }
 
 void MainWindow::generateMines()
 {
     srand(time(NULL));
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < xDimension; ++i)
     {
-        int j = rand() % 10;
+        int j = rand() % yDimension;
         mines[i][j] = -1;
         countMines(i, j);
     }
@@ -93,7 +98,7 @@ void MainWindow::countMines(int i, int j) {
     {
         incNum(i-1, j);
     }
-    if (i-1 >= 0 && j+1 <= 9)
+    if (i-1 >= 0 && j+1 < yDimension)
     {
         incNum(i-1, j+1);
     }
@@ -101,19 +106,19 @@ void MainWindow::countMines(int i, int j) {
     {
         incNum(i, j-1);
     }
-    if (j+1 <= 9)
+    if (j+1 < yDimension)
     {
         incNum(i, j+1);
     }
-    if (i+1 <= 9 && j-1 >= 0)
+    if (i+1 < xDimension && j-1 >= 0)
     {
         incNum(i+1, j-1);
     }
-    if (i+1 <= 9)
+    if (i+1 < xDimension)
     {
         incNum(i+1, j);
     }
-    if (i+1 <= 9 && j+1 <= 9)
+    if (i+1 < xDimension && j+1 < yDimension)
     {
         incNum(i+1, j+1);
     }
@@ -160,6 +165,15 @@ void MainWindow::clearField(int x, int y)
     }
 }
 
+void MainWindow::fillmines()
+{
+    for (int i = 0; i < xDimension; ++i) {
+        for (int j = 0; j < yDimension; ++j) {
+            mines[i][j] = 0;
+        }
+    }
+}
+
 void MainWindow::btn_action(int x, int y)
 {
     auto isMine = mines[x][y];
@@ -167,7 +181,7 @@ void MainWindow::btn_action(int x, int y)
     {
         case -1:
         {
-            btns[x][y]->setStyleSheet("color: red;");
+            newBtns[x][y]->setStyleSheet("color: red;");
             timer->stop();
             showMines();
             QMessageBox messageBox;
@@ -189,9 +203,9 @@ void MainWindow::btn_action(int x, int y)
         }
         default:
         {
-            btns[x][y]->setStyleSheet("border: none;");
-            btns[x][y]->setText(QString::number(isMine));
-            btns[x][y]->setDisabled(true);
+            newBtns[x][y]->setStyleSheet("border: none;");
+            newBtns[x][y]->setText(QString::number(isMine));
+            newBtns[x][y]->setDisabled(true);
         }
     }
 }
@@ -212,8 +226,12 @@ void MainWindow::newGame() {
             delete item;
         }
     }
+    for (int i = 0; i < xDimension; ++i) {
+        delete[] mines[i];
+    }
+    delete[] mines;
     delete btnLayout;
-    delete timer;
-    delete elapsedTime;
+    //delete timer;
+    //delete elapsedTime;
     init();
 }
