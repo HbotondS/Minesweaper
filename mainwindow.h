@@ -17,6 +17,7 @@
 typedef struct {
     int value;
     bool visited;
+    bool flaged;
 }Cell;
 
 namespace Ui {
@@ -60,7 +61,7 @@ private:
     void generateMines();
     void countMines(int, int);
     void incNum(int, int);
-    void showMines();
+    void showMines(int, int);
     void clearField(int, int);
     int btnsLeft();
     void printMines();

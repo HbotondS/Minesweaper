@@ -70,6 +70,7 @@ void MainWindow::init() {
         {
             newBtns[i][j] = new QRightClickButton();
             newBtns[i][j]->setMinimumSize(40, 40);
+            newBtns[i][j]->setIconSize(QSize(40, 40));
             connect(newBtns[i][j], &QRightClickButton::clicked, [this, i, j]{btn_action(i, j);});
             connect(newBtns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
             btnLayout->addWidget(newBtns[i][j], i, j);
@@ -159,7 +160,11 @@ void MainWindow::countMines(int i, int j) {
     }
 }
 
-void MainWindow::showMines()
+/**
+ * This method show all the mines, when the user click one of them.
+ * @param x & @param y indicates the location of the clicked mine.
+ */
+void MainWindow::showMines(int x, int y)
 {
     for (int i = 0; i < xDimension; ++i)
     {
@@ -167,7 +172,16 @@ void MainWindow::showMines()
         {
             if (cells[i][j].value == -1)
             {
-                newBtns[i][j]->setText(QString::number(cells[i][j].value));
+                if (i == x && j == y)
+                {
+
+                    QIcon mine(":/assets/mine_clicked.png");
+                    newBtns[x][y]->setIcon(mine);
+                } else
+                {
+                    QIcon mine(":/assets/mine.png");
+                    newBtns[i][j]->setIcon(mine);
+                }
             }
         }
     }
@@ -194,7 +208,43 @@ void MainWindow::clearField(int x, int y)
         {
             newBtns[x][y]->setStyleSheet("border: none;");
             cells[x][y].visited = true;
-            newBtns[x][y]->setText(QString::number(cells[x][y].value));
+            //newBtns[x][y]->setText(QString::number(cells[x][y].value));
+            QIcon icon;
+            switch (cells[x][y].value) {
+            case 1: {
+                icon.addFile(":/assets/1.png");
+                break;
+            }
+            case 2: {
+                icon.addFile(":/assets/2.png");
+                break;
+            }
+            case 3: {
+                icon.addFile(":/assets/3.png");
+                break;
+            }
+            case 4: {
+                icon.addFile(":/assets/4.png");
+                break;
+            }
+            case 5: {
+                icon.addFile(":/assets/5.png");
+                break;
+            }
+            case 6: {
+                icon.addFile(":/assets/6.png");
+                break;
+            }
+            case 7: {
+                icon.addFile(":/assets/7.png");
+                break;
+            }
+            case 8: {
+                icon.addFile(":/assets/8.png");
+                break;
+            }
+            }
+            newBtns[x][y]->setIcon(icon);
         }
     }
 }
@@ -205,21 +255,21 @@ void MainWindow::fillmines()
         for (int j = 0; j < yDimension; ++j) {
             cells[i][j].value = 0;
             cells[i][j].visited = false;
+            cells[i][j].flaged = false;
         }
     }
 }
 
 void MainWindow::btn_action(int x, int y)
 {
-    if (newBtns[x][y]->text() != "B") {
+    if (!cells[x][y].flaged) {
         auto isMine = cells[x][y].value;
         switch (isMine)
         {
             case -1:
             {
-                newBtns[x][y]->setStyleSheet("color: red;");
                 timer->stop();
-                showMines();
+                showMines(x, y);
                 QMessageBox messageBox;
                 QMessageBox::StandardButton reply;
                 reply = messageBox.critical(this, "Game over", "You lost!", QMessageBox::Retry | QMessageBox::Close);
@@ -239,8 +289,7 @@ void MainWindow::btn_action(int x, int y)
             }
             default:
             {
-                newBtns[x][y]->setStyleSheet("border: none;");
-                newBtns[x][y]->setText(QString::number(isMine));
+                newBtns[x][y]->setIcon(QIcon(":/assets/1.png"));
                 cells[x][y].visited = true;
             }
         }
@@ -259,17 +308,20 @@ void MainWindow::update_time()
 void MainWindow::onRightClicked(int x, int y)
 {
     int bombsLeft = bombsLabel->text().toInt();
-    if (bombsLeft > 0 && newBtns[x][y]->text() == "")
+    if (bombsLeft > 0 && !cells[x][y].flaged)
     {
+        qDebug() << "flaged";
         bombsLabel->setText(QString::number(--bombsLeft));
-        newBtns[x][y]->setText("B");
+        newBtns[x][y]->setIcon(QIcon(":/assets/flag.png"));
+        cells[x][y].flaged = true;
     }
     else
     {
-        if (newBtns[x][y]->text() == "B")
+        if (cells[x][y].flaged)
         {
             bombsLabel->setText(QString::number(++bombsLeft));
-            newBtns[x][y]->setText("");
+            newBtns[x][y]->setIcon(QIcon());
+            cells[x][y].flaged = false;
         }
     }
     if (bombsLeft == 0) {
@@ -306,6 +358,7 @@ void MainWindow::restart() {
         {
             newBtns[i][j]->setText("");
             cells[i][j].visited = false;
+            newBtns[i][j]->setIcon(QIcon()); // basicly remove the icon
             newBtns[i][j]->setStyleSheet("border-bottom: 2px solid #7B7B7B; \
                                          border-left: 2px solid #ffffff;    \
                                          border-top: 2px solid #ffffff;     \
@@ -318,11 +371,14 @@ void MainWindow::restart() {
     elapsedTime->start();
 }
 
+/**
+ * @return return the number of cells which are not visited.
+ */
 int MainWindow::btnsLeft() {
     int temp = 0;
     for (int i = 0; i < xDimension; ++i) {
         for (int j = 0; j < yDimension; ++j) {
-            if (newBtns[i][j]->isEnabled()) {
+            if (!cells[i][j].visited) {
                 ++temp;
                 if (temp > numberOfBombs) {
                     return temp;
