@@ -28,10 +28,12 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         qrightclickbutton.cpp \
+        startwindow.cpp
 
 HEADERS += \
         mainwindow.h \
-        qrightclickbutton.h
+        qrightclickbutton.h \
+        startwindow.h
         startwindow.cpp
 
 FORMS += \
