@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>240</width>
-    <height>260</height>
+    <height>269</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,7 +78,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="spinBox">
+      <widget class="QSpinBox" name="bombSpin">
        <property name="minimum">
         <number>10</number>
        </property>

@@ -22,6 +22,6 @@ void StartWindow::on_exitBtn_clicked()
 void StartWindow::on_startBtn_clicked()
 {
     this->close();
-    MainWindow *w = new MainWindow(ui->xSpin->value(), ui->ySpin->value());
+    MainWindow *w = new MainWindow(ui->xSpin->value(), ui->ySpin->value(), ui->bombSpin->value());
     w->show();
 }

@@ -23,8 +23,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
     MainWindow(int, int);
+    MainWindow(int, int, int);
     ~MainWindow();
 
 private:
@@ -32,6 +32,7 @@ private:
 
     int xDimension = 10;
     int yDimension = 10;
+    int numberOfBombs;
 
     QLabel* bombsLabel;
     QLabel* timeLabel;
@@ -60,6 +61,7 @@ private:
     void printMines();
     void fillmines();
     void restart();
+    void connectActions();
 
 private slots:
     void btn_action(int, int);

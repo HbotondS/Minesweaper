@@ -2,34 +2,38 @@
 #include "ui_mainwindow.h"
 #include "startwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(int xDimension, int yDimension):
+    ui(new Ui::MainWindow),
+    xDimension(xDimension),
+    yDimension(yDimension)
 {
     ui->setupUi(this);
     init();
-
-    connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
-    connect(ui->action_Restart, &QAction::triggered, [this]{restart();});
-    connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
+    connectActions();
 }
 
-MainWindow::MainWindow(int x, int y):
+MainWindow::MainWindow(int xDimension, int yDimension, int numberOfBombs):
     ui(new Ui::MainWindow),
-    xDimension(x),
-    yDimension(y)
-{    
+    xDimension(xDimension),
+    yDimension(yDimension),
+    numberOfBombs(numberOfBombs)
+{
     ui->setupUi(this);
     init();
-    connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
-    connect(ui->action_Restart, &QAction::triggered, [this]{restart();});
-    connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
-    connect(this, SIGNAL(win()), this, SLOT(winmsg()));
+    connectActions();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::connectActions()
+{
+    connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
+    connect(ui->action_Restart, &QAction::triggered, [this]{restart();});
+    connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
+    connect(this, SIGNAL(win()), this, SLOT(winmsg()));
 }
 
 void MainWindow::init() {
@@ -39,9 +43,10 @@ void MainWindow::init() {
 
     QVBoxLayout* mainLayout = new QVBoxLayout();
     btnLayout = new QGridLayout();
+    btnLayout->setSpacing(1);
     QHBoxLayout* labelLayout = new QHBoxLayout();
 
-    bombsLabel = new QLabel("10");
+    bombsLabel = new QLabel(QString::number(numberOfBombs));
     labelLayout->addWidget(bombsLabel);
     timeLabel = new QLabel("");
     timeLabel->setAlignment(Qt::AlignRight);
@@ -97,11 +102,18 @@ void MainWindow::newGame()
 void MainWindow::generateMines()
 {
     srand(time(NULL));
-    for (int i = 0; i < xDimension; ++i)
+    int x, y, currentMines = 0;
+    while (currentMines != numberOfBombs)
     {
-        int j = rand() % yDimension;
-        mines[i][j] = -1;
-        countMines(i, j);
+        x = rand() % xDimension;
+        y = rand() % yDimension;
+
+        if (mines[x][y] != -1)
+        {
+            mines[x][y] = -1;
+            ++currentMines;
+            countMines(x, y);
+        }
     }
 }
 
@@ -155,7 +167,6 @@ void MainWindow::showMines()
             if (mines[i][j] == -1)
             {
                 newBtns[i][j]->setText(QString::number(mines[i][j]));
-                break;
             }
         }
     }
@@ -215,7 +226,7 @@ void MainWindow::btn_action(int x, int y)
                 if (reply == QMessageBox::Retry) {
                     restart();
                 } else {
-                    QApplication::quit();
+                    // QApplication::quit();
                 }
                 break;
             }
@@ -233,7 +244,7 @@ void MainWindow::btn_action(int x, int y)
         }
     }
 
-    if (btnsLeft() == 10) {
+    if (btnsLeft() == numberOfBombs) {
         emit win();
     }
 }
@@ -260,7 +271,7 @@ void MainWindow::onRightClicked(int x, int y)
         }
     }
     if (bombsLeft == 0) {
-        if (btnsLeft() == 10) {
+        if (btnsLeft() == numberOfBombs) {
             emit win();
         }
     }
@@ -311,11 +322,11 @@ void MainWindow::restart() {
 
 int MainWindow::btnsLeft() {
     int temp = 0;
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 10; ++j) {
+    for (int i = 0; i < xDimension; ++i) {
+        for (int j = 0; j < yDimension; ++j) {
             if (newBtns[i][j]->isEnabled()) {
                 ++temp;
-                if (temp > 10) {
+                if (temp > numberOfBombs) {
                     return temp;
                 }
             }
