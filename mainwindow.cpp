@@ -37,9 +37,9 @@ void MainWindow::connectActions()
 }
 
 void MainWindow::init() {
-
-//    elapsedTime = new QElapsedTimer();
-//    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
+    timer = new QTimer();
+    elapsedTime = new QElapsedTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
     QVBoxLayout* mainLayout = new QVBoxLayout();
     btnLayout = new QGridLayout();
@@ -70,7 +70,6 @@ void MainWindow::init() {
         {
             newBtns[i][j] = new QRightClickButton();
             newBtns[i][j]->setMinimumSize(40, 40);
-            //newBtns[i][j]->setText(QString::number(mines[i][j]));
             connect(newBtns[i][j], &QRightClickButton::clicked, [this, i, j]{btn_action(i, j);});
             connect(newBtns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
             btnLayout->addWidget(newBtns[i][j], i, j);
@@ -78,11 +77,13 @@ void MainWindow::init() {
     }
     ui->centralWidget->setLayout(mainLayout);
 
-//    timer->start();
-    //    elapsedTime->start();
+    timer->start();
+    elapsedTime->start();
 }
 
-// for debuging
+/**
+ * for debuging
+ */
 void MainWindow::printMines() {
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
@@ -216,7 +217,7 @@ void MainWindow::btn_action(int x, int y)
             case -1:
             {
                 newBtns[x][y]->setStyleSheet("color: red;");
-                //timer->stop();
+                timer->stop();
                 showMines();
                 QMessageBox messageBox;
                 QMessageBox::StandardButton reply;
@@ -226,7 +227,7 @@ void MainWindow::btn_action(int x, int y)
                 if (reply == QMessageBox::Retry) {
                     restart();
                 } else {
-                    // QApplication::quit();
+                    QApplication::quit();
                 }
                 break;
             }
@@ -279,7 +280,7 @@ void MainWindow::onRightClicked(int x, int y)
 
 void MainWindow::winmsg()
 {
-    //timer->stop();
+    timer->stop();
     QMessageBox messageBox;
     QMessageBox::StandardButton reply;
     reply = messageBox.critical(this, "Win!", "Your time: " + timeLabel->text(), QMessageBox::Retry | QMessageBox::Close);
@@ -293,8 +294,6 @@ void MainWindow::winmsg()
 }
 
 void MainWindow::restart() {
-    QLayoutItem *item;
-    QWidget * widget;
     for (int i = 0; i < xDimension; ++i) {
         delete[] mines[i];
     }
@@ -318,6 +317,8 @@ void MainWindow::restart() {
     fillmines();
 
     generateMines();
+    timer->start();
+    elapsedTime->start();
 }
 
 int MainWindow::btnsLeft() {
