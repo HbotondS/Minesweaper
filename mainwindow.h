@@ -12,6 +12,7 @@
 #include "QTimer"
 #include "QVBoxLayout"
 #include "QHBoxLayout"
+#include "qrightclickbutton.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,7 +40,7 @@ private:
     QElapsedTimer* elapsedTime;
 
     QGridLayout* btnLayout;
-    QRightPushButton*** newBtns;
+    QRightClickButton*** newBtns;
 
     /*
      * -1 <= mines

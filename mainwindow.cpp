@@ -50,10 +50,10 @@ void MainWindow::init() {
     mainLayout->addLayout(labelLayout);
     mainLayout->addLayout(btnLayout);
 
-    newBtns = new QPushButton**[xDimension];
+    newBtns = new QRightClickButton**[xDimension];
     mines = new int*[xDimension];
     for (int i = 0; i < xDimension; ++i) {
-        newBtns[i] = new QPushButton*[yDimension];
+        newBtns[i] = new QRightClickButton*[yDimension];
         mines[i] = new int[yDimension];
     }
     fillmines();
@@ -63,11 +63,11 @@ void MainWindow::init() {
     {
         for (int j = 0; j < yDimension; ++j)
         {
-            newBtns[i][j] = new QPushButton();
+            newBtns[i][j] = new QRightClickButton();
             newBtns[i][j]->setMinimumSize(40, 40);
             newBtns[i][j]->setText(QString::number(mines[i][j]));
             connect(newBtns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
-            connect(newbtns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
+            connect(newBtns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
             btnLayout->addWidget(newBtns[i][j], i, j);
         }
     }
@@ -198,13 +198,13 @@ void MainWindow::fillmines()
 
 void MainWindow::btn_action(int x, int y)
 {
-    if (btns[x][y]->text() != "B") {
+    if (newBtns[x][y]->text() != "B") {
         auto isMine = mines[x][y];
         switch (isMine)
         {
             case -1:
             {
-                btns[x][y]->setStyleSheet("color: red;");
+                newBtns[x][y]->setStyleSheet("color: red;");
                 timer->stop();
                 showMines();
                 QMessageBox messageBox;
@@ -226,9 +226,10 @@ void MainWindow::btn_action(int x, int y)
             }
             default:
             {
-                btns[x][y]->setStyleSheet("border: none;");
-                btns[x][y]->setText(QString::number(isMine));
-                btns[x][y]->setDisabled(true);
+                newBtns[x][y]->setStyleSheet("border: none;");
+                newBtns[x][y]->setText(QString::number(isMine));
+                newBtns[x][y]->setDisabled(true);
+            }
         }
     }
 
@@ -245,17 +246,17 @@ void MainWindow::update_time()
 void MainWindow::onRightClicked(int x, int y)
 {
     int bombsLeft = bombsLabel->text().toInt();
-    if (bombsLeft > 0 && btns[x][y]->text() == "")
+    if (bombsLeft > 0 && newBtns[x][y]->text() == "")
     {
         bombsLabel->setText(QString::number(--bombsLeft));
-        btns[x][y]->setText("B");
+        newBtns[x][y]->setText("B");
     }
     else
     {
-        if (btns[x][y]->text() == "B")
+        if (newBtns[x][y]->text() == "B")
         {
             bombsLabel->setText(QString::number(++bombsLeft));
-            btns[x][y]->setText("");
+            newBtns[x][y]->setText("");
         }
     }
     if (bombsLeft == 0) {
@@ -311,7 +312,7 @@ int MainWindow::btnsLeft() {
     int temp = 0;
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
-            if (btns[i][j]->isEnabled()) {
+            if (newBtns[i][j]->isEnabled()) {
                 ++temp;
                 if (temp > 10) {
                     return temp;
