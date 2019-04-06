@@ -205,7 +205,7 @@ void MainWindow::btn_action(int x, int y)
             case -1:
             {
                 newBtns[x][y]->setStyleSheet("color: red;");
-                timer->stop();
+                //timer->stop();
                 showMines();
                 QMessageBox messageBox;
                 QMessageBox::StandardButton reply;
@@ -268,7 +268,7 @@ void MainWindow::onRightClicked(int x, int y)
 
 void MainWindow::winmsg()
 {
-    timer->stop();
+    //timer->stop();
     QMessageBox messageBox;
     QMessageBox::StandardButton reply;
     reply = messageBox.critical(this, "Win!", "Your time: " + timeLabel->text(), QMessageBox::Retry | QMessageBox::Close);
