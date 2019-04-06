@@ -56,10 +56,10 @@ void MainWindow::init() {
     mainLayout->addLayout(btnLayout);
 
     newBtns = new QRightClickButton**[xDimension];
-    mines = new int*[xDimension];
+    cells = new Cell*[xDimension];
     for (int i = 0; i < xDimension; ++i) {
         newBtns[i] = new QRightClickButton*[yDimension];
-        mines[i] = new int[yDimension];
+        cells[i] = new Cell[yDimension];
     }
     fillmines();
 
@@ -87,7 +87,7 @@ void MainWindow::init() {
 void MainWindow::printMines() {
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            qDebug() << mines[i][j] << " ";
+            qDebug() << cells[i][j].value << " ";
         }
         qDebug() << "\n";
     }
@@ -109,9 +109,9 @@ void MainWindow::generateMines()
         x = rand() % xDimension;
         y = rand() % yDimension;
 
-        if (mines[x][y] != -1)
+        if (cells[x][y].value != -1)
         {
-            mines[x][y] = -1;
+            cells[x][y].value = -1;
             ++currentMines;
             countMines(x, y);
         }
@@ -119,8 +119,8 @@ void MainWindow::generateMines()
 }
 
 void MainWindow::incNum(int i, int j) {
-    if (mines[i][j] != -1) {
-        ++mines[i][j];
+    if (cells[i][j].value != -1) {
+        ++cells[i][j].value;
     }
 }
 
@@ -165,9 +165,9 @@ void MainWindow::showMines()
     {
         for (int j = 0; j < yDimension; ++j)
         {
-            if (mines[i][j] == -1)
+            if (cells[i][j].value == -1)
             {
-                newBtns[i][j]->setText(QString::number(mines[i][j]));
+                newBtns[i][j]->setText(QString::number(cells[i][j].value));
             }
         }
     }
@@ -175,10 +175,10 @@ void MainWindow::showMines()
 
 void MainWindow::clearField(int x, int y)
 {
-    if (mines[x][y] == 0 && newBtns[x][y]->isEnabled())
+    if (cells[x][y].value == 0 && !cells[x][y].visited)
     {
         newBtns[x][y]->setStyleSheet("border: none;");
-        newBtns[x][y]->setDisabled(true);
+        cells[x][y].visited = true;
         if ((x-1) > -1)
             clearField(x-1, y);
         if ((y-1) > -1)
@@ -190,11 +190,11 @@ void MainWindow::clearField(int x, int y)
     }
     else
     {
-        if (mines[x][y] != 0)
+        if (cells[x][y].value != 0)
         {
             newBtns[x][y]->setStyleSheet("border: none;");
-            newBtns[x][y]->setDisabled(true);
-            newBtns[x][y]->setText(QString::number(mines[x][y]));
+            cells[x][y].visited = true;
+            newBtns[x][y]->setText(QString::number(cells[x][y].value));
         }
     }
 }
@@ -203,7 +203,8 @@ void MainWindow::fillmines()
 {
     for (int i = 0; i < xDimension; ++i) {
         for (int j = 0; j < yDimension; ++j) {
-            mines[i][j] = 0;
+            cells[i][j].value = 0;
+            cells[i][j].visited = false;
         }
     }
 }
@@ -211,7 +212,7 @@ void MainWindow::fillmines()
 void MainWindow::btn_action(int x, int y)
 {
     if (newBtns[x][y]->text() != "B") {
-        auto isMine = mines[x][y];
+        auto isMine = cells[x][y].value;
         switch (isMine)
         {
             case -1:
@@ -240,7 +241,7 @@ void MainWindow::btn_action(int x, int y)
             {
                 newBtns[x][y]->setStyleSheet("border: none;");
                 newBtns[x][y]->setText(QString::number(isMine));
-                newBtns[x][y]->setDisabled(true);
+                cells[x][y].visited = true;
             }
         }
     }
@@ -294,27 +295,23 @@ void MainWindow::winmsg()
 }
 
 void MainWindow::restart() {
+    cells = new Cell*[xDimension];
     for (int i = 0; i < xDimension; ++i) {
-        delete[] mines[i];
+        cells[i] = new Cell[yDimension];
     }
-    delete[] mines;
+    fillmines();
     for (int i = 0; i < xDimension; ++i)
     {
         for (int j = 0; j < yDimension; ++j)
         {
             newBtns[i][j]->setText("");
-            newBtns[i][j]->setEnabled(true);
+            cells[i][j].visited = false;
             newBtns[i][j]->setStyleSheet("border-bottom: 2px solid #7B7B7B; \
                                          border-left: 2px solid #ffffff;    \
                                          border-top: 2px solid #ffffff;     \
                                          border-right: 2px solid #7B7B7B;");
         }
     }
-    mines = new int*[xDimension];
-    for (int i = 0; i < xDimension; ++i) {
-        mines[i] = new int[yDimension];
-    }
-    fillmines();
 
     generateMines();
     timer->start();

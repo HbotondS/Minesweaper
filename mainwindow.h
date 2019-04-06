@@ -14,6 +14,11 @@
 #include "QHBoxLayout"
 #include "qrightclickbutton.h"
 
+typedef struct {
+    int value;
+    bool visited;
+}Cell;
+
 namespace Ui {
 class MainWindow;
 }
@@ -48,7 +53,7 @@ private:
      *  0 <= no mines in neighbour
      *  1-6 <= no. of mines located in neighbour
      */
-    int **mines;
+    Cell **cells;
 
     void init();
     void newGame();
