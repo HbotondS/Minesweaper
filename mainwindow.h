@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <QMainWindow>
-#include "QPushButton"
+#include "qrightclickbutton.h"
 #include "QDebug"
 #include "QGridLayout"
 #include "QMessageBox"
@@ -39,7 +39,7 @@ private:
     QElapsedTimer* elapsedTime;
 
     QGridLayout* btnLayout;
-    QPushButton*** newBtns;
+    QRightPushButton*** newBtns;
 
     /*
      * -1 <= mines
@@ -55,12 +55,21 @@ private:
     void incNum(int, int);
     void showMines();
     void clearField(int, int);
+    int btnsLeft();
+    void printMines();
     void fillmines();
     void restart();
 
 private slots:
     void btn_action(int, int);
     void update_time();
+
+    void onRightClicked(int, int);
+
+    void winmsg();
+
+signals:
+    void win();
 };
 
 #endif // MAINWINDOW_H
