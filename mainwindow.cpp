@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "startwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -9,6 +10,19 @@ MainWindow::MainWindow(QWidget *parent) :
     init();
 
     connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
+    connect(ui->action_Restart, &QAction::triggered, [this]{restart();});
+    connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
+}
+
+MainWindow::MainWindow(int x, int y):
+    ui(new Ui::MainWindow),
+    xDimension(x),
+    yDimension(y)
+{    
+    ui->setupUi(this);
+    init();
+    connect(ui->action_New_game, &QAction::triggered, [this]{newGame();});
+    connect(ui->action_Restart, &QAction::triggered, [this]{restart();});
     connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
     connect(this, SIGNAL(win()), this, SLOT(winmsg()));
 }
@@ -19,42 +33,48 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::init() {
-    timer = new QTimer();
-    elapsedTime = new QElapsedTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
-    memset(mines, 0, sizeof(mines));
+//    elapsedTime = new QElapsedTimer();
+//    connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
-    btnLayout = new QGridLayout(ui->centralWidget);
+    QVBoxLayout* mainLayout = new QVBoxLayout();
+    btnLayout = new QGridLayout();
+    QHBoxLayout* labelLayout = new QHBoxLayout();
+
     bombsLabel = new QLabel("10");
-    bombsLabel->setStyleSheet("padding-bottom: 600px;");
-    btnLayout->addWidget(bombsLabel, 0, 0, 0, 4);
+    labelLayout->addWidget(bombsLabel);
     timeLabel = new QLabel("");
-    timeLabel->setStyleSheet("padding-bottom: 600px;");
-    timeLabel->setAlignment(Qt::AlignCenter | Qt::AlignRight);
-    btnLayout->addWidget(timeLabel, 0, 9, 0, -5);
+    timeLabel->setAlignment(Qt::AlignRight);
+    labelLayout->addWidget(timeLabel);
 
+    mainLayout->addLayout(labelLayout);
+    mainLayout->addLayout(btnLayout);
 
-    for (int i = 0; i < 10; ++i)
-    {
-        for (int j = 0; j < 10; ++j)
-        {
-            btns[i][j] = new QRightClickButton(this);
-            btns[i][j]->setMinimumSize(50, 50);
-            btnLayout->addWidget(btns[i][j], i+1, j);
-            connect(btns[i][j], &QRightClickButton::clicked, [this, i, j]{btn_action(i, j);});
-            connect(btns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
-        }
+    newBtns = new QPushButton**[xDimension];
+    mines = new int*[xDimension];
+    for (int i = 0; i < xDimension; ++i) {
+        newBtns[i] = new QPushButton*[yDimension];
+        mines[i] = new int[yDimension];
     }
-    this->setFixedSize(this->minimumSize());
-    ui->centralWidget->setLayout(btnLayout);
+    fillmines();
 
     generateMines();
+    for (int i = 0; i < xDimension; ++i)
+    {
+        for (int j = 0; j < yDimension; ++j)
+        {
+            newBtns[i][j] = new QPushButton();
+            newBtns[i][j]->setMinimumSize(40, 40);
+            newBtns[i][j]->setText(QString::number(mines[i][j]));
+            connect(newBtns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
+            connect(newbtns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
+            btnLayout->addWidget(newBtns[i][j], i, j);
+        }
+    }
+    ui->centralWidget->setLayout(mainLayout);
 
-    timer->start();
-    elapsedTime->start();
-
-    //printMines();
+//    timer->start();
+    //    elapsedTime->start();
 }
 
 // for debuging
@@ -67,12 +87,19 @@ void MainWindow::printMines() {
     }
 }
 
+void MainWindow::newGame()
+{
+    this->close();
+    StartWindow *w = new StartWindow();
+    w->show();
+}
+
 void MainWindow::generateMines()
 {
     srand(time(NULL));
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < xDimension; ++i)
     {
-        int j = rand() % 10;
+        int j = rand() % yDimension;
         mines[i][j] = -1;
         countMines(i, j);
     }
@@ -93,7 +120,7 @@ void MainWindow::countMines(int i, int j) {
     {
         incNum(i-1, j);
     }
-    if (i-1 >= 0 && j+1 <= 9)
+    if (i-1 >= 0 && j+1 < yDimension)
     {
         incNum(i-1, j+1);
     }
@@ -101,19 +128,19 @@ void MainWindow::countMines(int i, int j) {
     {
         incNum(i, j-1);
     }
-    if (j+1 <= 9)
+    if (j+1 < yDimension)
     {
         incNum(i, j+1);
     }
-    if (i+1 <= 9 && j-1 >= 0)
+    if (i+1 < xDimension && j-1 >= 0)
     {
         incNum(i+1, j-1);
     }
-    if (i+1 <= 9)
+    if (i+1 < xDimension)
     {
         incNum(i+1, j);
     }
-    if (i+1 <= 9 && j+1 <= 9)
+    if (i+1 < xDimension && j+1 < yDimension)
     {
         incNum(i+1, j+1);
     }
@@ -121,13 +148,13 @@ void MainWindow::countMines(int i, int j) {
 
 void MainWindow::showMines()
 {
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < xDimension; ++i)
     {
-        for (int j = 0; j < 10; ++j)
+        for (int j = 0; j < yDimension; ++j)
         {
             if (mines[i][j] == -1)
             {
-                btns[i][j]->setText(QString::number(mines[i][j]));
+                newBtns[i][j]->setText(QString::number(mines[i][j]));
                 break;
             }
         }
@@ -136,28 +163,35 @@ void MainWindow::showMines()
 
 void MainWindow::clearField(int x, int y)
 {
-    if (btns[x][y]->text() != "B") {
-        if (mines[x][y] == 0 && btns[x][y]->isEnabled())
+    if (mines[x][y] == 0 && newBtns[x][y]->isEnabled())
+    {
+        newBtns[x][y]->setStyleSheet("border: none;");
+        newBtns[x][y]->setDisabled(true);
+        if ((x-1) > -1)
+            clearField(x-1, y);
+        if ((y-1) > -1)
+            clearField(x, y-1);
+        if ((x+1) < xDimension)
+            clearField(x+1, y);
+        if ((y+1) < yDimension)
+            clearField(x, y+1);
+    }
+    else
+    {
+        if (mines[x][y] != 0)
         {
-            btns[x][y]->setStyleSheet("border: none;");
-            btns[x][y]->setDisabled(true);
-            if ((x-1) > -1)
-                clearField(x-1, y);
-            if ((y-1) > -1)
-                clearField(x, y-1);
-            if ((x+1) < 10)
-                clearField(x+1, y);
-            if ((y+1) < 10)
-                clearField(x, y+1);
+            newBtns[x][y]->setStyleSheet("border: none;");
+            newBtns[x][y]->setDisabled(true);
+            newBtns[x][y]->setText(QString::number(mines[x][y]));
         }
-        else
-        {
-            if (mines[x][y] != 0)
-            {
-                btns[x][y]->setStyleSheet("border: none;");
-                btns[x][y]->setDisabled(true);
-                btns[x][y]->setText(QString::number(mines[x][y]));
-            }
+    }
+}
+
+void MainWindow::fillmines()
+{
+    for (int i = 0; i < xDimension; ++i) {
+        for (int j = 0; j < yDimension; ++j) {
+            mines[i][j] = 0;
         }
     }
 }
@@ -179,7 +213,7 @@ void MainWindow::btn_action(int x, int y)
                 messageBox.setFixedSize(500,200);
 
                 if (reply == QMessageBox::Retry) {
-                    newGame();
+                    restart();
                 } else {
                     QApplication::quit();
                 }
@@ -195,7 +229,6 @@ void MainWindow::btn_action(int x, int y)
                 btns[x][y]->setStyleSheet("border: none;");
                 btns[x][y]->setText(QString::number(isMine));
                 btns[x][y]->setDisabled(true);
-            }
         }
     }
 
@@ -247,21 +280,31 @@ void MainWindow::winmsg()
     }
 }
 
-void MainWindow::newGame() {
+void MainWindow::restart() {
     QLayoutItem *item;
     QWidget * widget;
-    while ((item = btnLayout->takeAt(0))) {
+    /*while ((item = btnLayout->takeAt(0))) {
         if ((widget = item->widget()) != nullptr) {
             widget->hide(); delete widget;
         }
         else {
             delete item;
         }
+    }*/
+    for (int i = 0; i < xDimension; ++i) {
+        delete[] mines[i];
     }
-    delete btnLayout;
-    delete timer;
-    delete elapsedTime;
-    init();
+    delete[] mines;
+    //ldelete btnLayout;
+    //delete timer;
+    //delete elapsedTime;
+    for (int i = 0; i < xDimension; ++i)
+    {
+        for (int j = 0; j < yDimension; ++j)
+        {
+            newBtns[i][j]->setText("R");
+        }
+    }
 }
 
 int MainWindow::btnsLeft() {

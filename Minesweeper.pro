@@ -27,14 +27,16 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    qrightclickbutton.cpp
+        qrightclickbutton.cpp
 
 HEADERS += \
         mainwindow.h \
-    qrightclickbutton.h
+        qrightclickbutton.h
+        startwindow.cpp
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+        startwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

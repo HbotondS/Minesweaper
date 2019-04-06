@@ -10,6 +10,8 @@
 #include "QLabel"
 #include "QElapsedTimer"
 #include "QTimer"
+#include "QVBoxLayout"
+#include "QHBoxLayout"
 
 namespace Ui {
 class MainWindow;
@@ -21,10 +23,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(int, int);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+
+    int xDimension = 10;
+    int yDimension = 10;
 
     QLabel* bombsLabel;
     QLabel* timeLabel;
@@ -32,15 +38,15 @@ private:
     QTimer* timer;
     QElapsedTimer* elapsedTime;
 
-    QGridLayout *btnLayout;
-    QRightClickButton* btns[10][10];
+    QGridLayout* btnLayout;
+    QRightPushButton*** newBtns;
 
     /*
      * -1 <= mines
      *  0 <= no mines in neighbour
      *  1-6 <= no. of mines located in neighbour
      */
-    int mines[10][10];
+    int **mines;
 
     void init();
     void newGame();
@@ -50,8 +56,9 @@ private:
     void showMines();
     void clearField(int, int);
     int btnsLeft();
-
     void printMines();
+    void fillmines();
+    void restart();
 
 private slots:
     void btn_action(int, int);
