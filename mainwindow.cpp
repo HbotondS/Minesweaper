@@ -65,8 +65,8 @@ void MainWindow::init() {
         {
             newBtns[i][j] = new QRightClickButton();
             newBtns[i][j]->setMinimumSize(40, 40);
-            newBtns[i][j]->setText(QString::number(mines[i][j]));
-            connect(newBtns[i][j], &QPushButton::clicked, [this, i, j]{btn_action(i, j);});
+            //newBtns[i][j]->setText(QString::number(mines[i][j]));
+            connect(newBtns[i][j], &QRightClickButton::clicked, [this, i, j]{btn_action(i, j);});
             connect(newBtns[i][j], &QRightClickButton::rightClicked, [this, i, j]{onRightClicked(i, j);});
             btnLayout->addWidget(newBtns[i][j], i, j);
         }
@@ -284,28 +284,29 @@ void MainWindow::winmsg()
 void MainWindow::restart() {
     QLayoutItem *item;
     QWidget * widget;
-    /*while ((item = btnLayout->takeAt(0))) {
-        if ((widget = item->widget()) != nullptr) {
-            widget->hide(); delete widget;
-        }
-        else {
-            delete item;
-        }
-    }*/
     for (int i = 0; i < xDimension; ++i) {
         delete[] mines[i];
     }
     delete[] mines;
-    //ldelete btnLayout;
-    //delete timer;
-    //delete elapsedTime;
     for (int i = 0; i < xDimension; ++i)
     {
         for (int j = 0; j < yDimension; ++j)
         {
-            newBtns[i][j]->setText("R");
+            newBtns[i][j]->setText("");
+            newBtns[i][j]->setEnabled(true);
+            newBtns[i][j]->setStyleSheet("border-bottom: 2px solid #7B7B7B; \
+                                         border-left: 2px solid #ffffff;    \
+                                         border-top: 2px solid #ffffff;     \
+                                         border-right: 2px solid #7B7B7B;");
         }
     }
+    mines = new int*[xDimension];
+    for (int i = 0; i < xDimension; ++i) {
+        mines[i] = new int[yDimension];
+    }
+    fillmines();
+
+    generateMines();
 }
 
 int MainWindow::btnsLeft() {
