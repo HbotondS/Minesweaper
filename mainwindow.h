@@ -80,9 +80,11 @@ private slots:
     void onRightClicked(int, int);
 
     void winmsg();
+    void gameOverMsg();
 
 signals:
     void win();
+    void gameOver();
 };
 
 #endif // MAINWINDOW_H

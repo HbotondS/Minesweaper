@@ -34,6 +34,7 @@ void MainWindow::connectActions()
     connect(ui->action_Restart, &QAction::triggered, [this]{restart();});
     connect(ui->action_Exit, &QAction::triggered, []{QApplication::quit();});
     connect(this, SIGNAL(win()), this, SLOT(winmsg()));
+    connect(this, SIGNAL(gameOver()), this, SLOT(gameOverMsg()));
 }
 
 void MainWindow::setIconNumber(int x, int y)
@@ -273,16 +274,7 @@ void MainWindow::btn_action(int x, int y)
             {
                 timer->stop();
                 showMines(x, y);
-                QMessageBox messageBox;
-                QMessageBox::StandardButton reply;
-                reply = messageBox.critical(this, "Game over", "You lost!", QMessageBox::Retry | QMessageBox::Close);
-                messageBox.setFixedSize(500,200);
-
-                if (reply == QMessageBox::Retry) {
-                    restart();
-                } else {
-                    QApplication::quit();
-                }
+                emit gameOver();
                 break;
             }
             case 0:
@@ -292,8 +284,10 @@ void MainWindow::btn_action(int x, int y)
             }
             default:
             {
-                setIconNumber(x, y);
-                cells[x][y].visited = true;
+                if (!cells[x][y].visited) {
+                    setIconNumber(x, y);
+                    cells[x][y].visited = true;
+                }
             }
         }
     }
@@ -345,6 +339,20 @@ void MainWindow::winmsg()
 
     if (reply == QMessageBox::Retry) {
         newGame();
+    } else {
+        QApplication::quit();
+    }
+}
+
+void MainWindow::gameOverMsg()
+{
+    QMessageBox messageBox;
+    QMessageBox::StandardButton reply;
+    reply = messageBox.critical(this, "Game over", "You lost!", QMessageBox::Retry | QMessageBox::Close);
+    messageBox.setFixedSize(500,200);
+
+    if (reply == QMessageBox::Retry) {
+        restart();
     } else {
         QApplication::quit();
     }
