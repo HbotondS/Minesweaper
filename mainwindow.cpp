@@ -36,7 +36,47 @@ void MainWindow::connectActions()
     connect(this, SIGNAL(win()), this, SLOT(winmsg()));
 }
 
+void MainWindow::setIconNumber(int x, int y)
+{
+    switch (cells[x][y].value) {
+    case 1: {
+        newBtns[x][y]->setIcon(*assets->getImg1());
+        break;
+    }
+    case 2: {
+        newBtns[x][y]->setIcon(*assets->getImg2());
+        break;
+    }
+    case 3: {
+        newBtns[x][y]->setIcon(*assets->getImg3());
+        break;
+    }
+    case 4: {
+        newBtns[x][y]->setIcon(*assets->getImg4());
+        break;
+    }
+    case 5: {
+        newBtns[x][y]->setIcon(*assets->getImg5());
+        break;
+    }
+    case 6: {
+        newBtns[x][y]->setIcon(*assets->getImg6());
+        break;
+    }
+    case 7: {
+        newBtns[x][y]->setIcon(*assets->getImg7());
+        break;
+    }
+    case 8: {
+        newBtns[x][y]->setIcon(*assets->getImg8());
+        break;
+    }
+    }
+}
+
 void MainWindow::init() {
+    assets = new Assets;
+
     timer = new QTimer();
     elapsedTime = new QElapsedTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(update_time()));
@@ -174,13 +214,10 @@ void MainWindow::showMines(int x, int y)
             {
                 if (i == x && j == y)
                 {
-
-                    QIcon mine(":/assets/mine_clicked.png");
-                    newBtns[x][y]->setIcon(mine);
+                    newBtns[x][y]->setIcon(*assets->getImgMineClicked());
                 } else
                 {
-                    QIcon mine(":/assets/mine.png");
-                    newBtns[i][j]->setIcon(mine);
+                    newBtns[i][j]->setIcon(*assets->getImgMine());
                 }
             }
         }
@@ -208,43 +245,7 @@ void MainWindow::clearField(int x, int y)
         {
             newBtns[x][y]->setStyleSheet("border: none;");
             cells[x][y].visited = true;
-            //newBtns[x][y]->setText(QString::number(cells[x][y].value));
-            QIcon icon;
-            switch (cells[x][y].value) {
-            case 1: {
-                icon.addFile(":/assets/1.png");
-                break;
-            }
-            case 2: {
-                icon.addFile(":/assets/2.png");
-                break;
-            }
-            case 3: {
-                icon.addFile(":/assets/3.png");
-                break;
-            }
-            case 4: {
-                icon.addFile(":/assets/4.png");
-                break;
-            }
-            case 5: {
-                icon.addFile(":/assets/5.png");
-                break;
-            }
-            case 6: {
-                icon.addFile(":/assets/6.png");
-                break;
-            }
-            case 7: {
-                icon.addFile(":/assets/7.png");
-                break;
-            }
-            case 8: {
-                icon.addFile(":/assets/8.png");
-                break;
-            }
-            }
-            newBtns[x][y]->setIcon(icon);
+            setIconNumber(x, y);
         }
     }
 }
@@ -289,7 +290,7 @@ void MainWindow::btn_action(int x, int y)
             }
             default:
             {
-                newBtns[x][y]->setIcon(QIcon(":/assets/1.png"));
+                setIconNumber(x, y);
                 cells[x][y].visited = true;
             }
         }
@@ -310,9 +311,8 @@ void MainWindow::onRightClicked(int x, int y)
     int bombsLeft = bombsLabel->text().toInt();
     if (bombsLeft > 0 && !cells[x][y].flaged)
     {
-        qDebug() << "flaged";
         bombsLabel->setText(QString::number(--bombsLeft));
-        newBtns[x][y]->setIcon(QIcon(":/assets/flag.png"));
+        newBtns[x][y]->setIcon(*assets->getImgFlag());
         cells[x][y].flaged = true;
     }
     else

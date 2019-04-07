@@ -13,6 +13,7 @@
 #include "QVBoxLayout"
 #include "QHBoxLayout"
 #include "qrightclickbutton.h"
+#include "assets.h"
 
 typedef struct {
     int value;
@@ -49,6 +50,8 @@ private:
     QGridLayout* btnLayout;
     QRightClickButton*** newBtns;
 
+    Assets *assets;
+
     /*
      * -1 <= mines
      *  0 <= no mines in neighbour
@@ -68,6 +71,7 @@ private:
     void fillmines();
     void restart();
     void connectActions();
+    void setIconNumber(int, int);
 
 private slots:
     void btn_action(int, int);
