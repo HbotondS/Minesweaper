@@ -217,7 +217,9 @@ void MainWindow::showMines(int x, int y)
                     newBtns[x][y]->setIcon(*assets->getImgMineClicked());
                 } else
                 {
-                    newBtns[i][j]->setIcon(*assets->getImgMine());
+                    if (!cells[i][j].flaged) {
+                        newBtns[i][j]->setIcon(*assets->getImgMine());
+                    }
                 }
             }
         }
@@ -308,25 +310,27 @@ void MainWindow::update_time()
 
 void MainWindow::onRightClicked(int x, int y)
 {
-    int bombsLeft = bombsLabel->text().toInt();
-    if (bombsLeft > 0 && !cells[x][y].flaged)
-    {
-        bombsLabel->setText(QString::number(--bombsLeft));
-        newBtns[x][y]->setIcon(*assets->getImgFlag());
-        cells[x][y].flaged = true;
-    }
-    else
-    {
-        if (cells[x][y].flaged)
+    if (!cells[x][y].visited) {
+        int bombsLeft = bombsLabel->text().toInt();
+        if (bombsLeft > 0 && !cells[x][y].flaged)
         {
-            bombsLabel->setText(QString::number(++bombsLeft));
-            newBtns[x][y]->setIcon(QIcon());
-            cells[x][y].flaged = false;
+            bombsLabel->setText(QString::number(--bombsLeft));
+            newBtns[x][y]->setIcon(*assets->getImgFlag());
+            cells[x][y].flaged = true;
         }
-    }
-    if (bombsLeft == 0) {
-        if (btnsLeft() == numberOfBombs) {
-            emit win();
+        else
+        {
+            if (cells[x][y].flaged)
+            {
+                bombsLabel->setText(QString::number(++bombsLeft));
+                newBtns[x][y]->setIcon(QIcon());
+                cells[x][y].flaged = false;
+            }
+        }
+        if (bombsLeft == 0) {
+            if (btnsLeft() == numberOfBombs) {
+                emit win();
+            }
         }
     }
 }
@@ -369,6 +373,7 @@ void MainWindow::restart() {
     generateMines();
     timer->start();
     elapsedTime->start();
+    bombsLabel->setText(QString::number(numberOfBombs));
 }
 
 /**
